@@ -1,9 +1,3 @@
-import random
+pw = input("What's your password? ")
 
-def main():
-    generate_random_number()
-
-def generate_random_number():
-    print(random.random())
-
-main()
+print("*" * len(pw))
