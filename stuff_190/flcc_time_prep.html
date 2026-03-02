@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FLCC Java Prep: The Time Class</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap');
         :root {
             /* FLCC Inspired Colors */
-            --flcc-blue: #003366;
-            --flcc-gold: #FFCC00;
+            --flcc-blue: #0046AD;
+            --flcc-green: #58A618;
             --text-dark: #333;
             --bg-light: #f4f4f9;
             --success: #28a745;
@@ -16,7 +17,7 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Lato', sans-serif;
             background-color: var(--bg-light);
             color: var(--text-dark);
             margin: 0;
@@ -29,7 +30,7 @@
             color: white;
             padding: 2rem;
             text-align: center;
-            border-bottom: 5px solid var(--flcc-gold);
+            border-bottom: 5px solid var(--flcc-green);
         }
 
         header h1 {
@@ -40,7 +41,7 @@
         header p {
             margin-top: 10px;
             font-size: 1.2rem;
-            color: var(--flcc-gold);
+            color: var(--flcc-green);
         }
 
         .container {
@@ -64,7 +65,7 @@
 
         h2 {
             color: var(--flcc-blue);
-            border-bottom: 2px solid var(--flcc-gold);
+            border-bottom: 2px solid var(--flcc-green);
             padding-bottom: 10px;
             margin-top: 0;
         }
@@ -106,7 +107,7 @@
 
         button.option-btn:hover {
             background-color: var(--flcc-blue);
-            color: var(--flcc-gold);
+            color: white;
         }
 
         button.option-btn.correct {
@@ -173,7 +174,7 @@
             margin: 20px auto;
             padding: 15px 30px;
             font-size: 1.2rem;
-            background-color: var(--flcc-gold);
+            background-color: var(--flcc-green);
             color: var(--flcc-blue);
             border: none;
             border-radius: 50px;
@@ -183,7 +184,7 @@
         }
         
         .reveal-btn:hover {
-            background-color: #e6b800;
+            background-color: #4a8c13;
         }
 
     </style>
@@ -206,8 +207,10 @@
             <span class="question-text">Q10. When you call <code>System.currentTimeMillis()</code>, it returns the number of milliseconds that have passed since a specific "Epoch" date. What is that date?</span>
             <div class="options-grid" id="q10-options">
                 <button class="option-btn" onclick="checkMC(this, false, 'q10-feed')">January 1, 1900</button>
+                <button class="option-btn" onclick="checkMC(this, false, 'q10-feed')">May 23, 1995</button>
                 <button class="option-btn" onclick="checkMC(this, true, 'q10-feed')">January 1, 1970</button>
                 <button class="option-btn" onclick="checkMC(this, false, 'q10-feed')">December 31, 1999</button>
+                <button class="option-btn" onclick="checkMC(this, false, 'q10-feed')">March 3, 2026</button>
                 <button class="option-btn" onclick="checkMC(this, false, 'q10-feed')">The moment the JVM started</button>
             </div>
             <div id="q10-feed" class="feedback"></div>
@@ -344,7 +347,7 @@ public Time(int h, int m, int s) { ... }
     function checkInput(inputId, correctVal, feedbackId) {
         const input = document.getElementById(inputId);
         const feedbackEl = document.getElementById(feedbackId);
-        const userVal = parseInt(input.value);
+        const userVal = parseFloat(input.value);
 
         if (userVal === correctVal) {
             feedbackEl.textContent = "Spot on!";
@@ -365,7 +368,7 @@ public Time(int h, int m, int s) { ... }
 
     function confettiEffect() {
         // Simple visual cue
-        const colors = ['#003366', '#FFCC00', '#ffffff'];
+        const colors = ['#0046AD', '#58A618', '#ffffff'];
         let end = Date.now() + 1000;
 
         // This is just a placeholder for a real confetti library, 
