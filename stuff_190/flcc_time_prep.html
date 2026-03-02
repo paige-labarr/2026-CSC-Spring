@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FLCC Java Prep: The Time Class</title>
+    <style>
+        :root {
+            /* FLCC Inspired Colors */
+            --flcc-blue: #003366;
+            --flcc-gold: #FFCC00;
+            --text-dark: #333;
+            --bg-light: #f4f4f9;
+            --success: #28a745;
+            --error: #dc3545;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: var(--flcc-blue);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            border-bottom: 5px solid var(--flcc-gold);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+
+        header p {
+            margin-top: 10px;
+            font-size: 1.2rem;
+            color: var(--flcc-gold);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+
+        section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            transition: transform 0.2s;
+        }
+
+        section:hover {
+            transform: translateY(-2px);
+        }
+
+        h2 {
+            color: var(--flcc-blue);
+            border-bottom: 2px solid var(--flcc-gold);
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+
+        .question-block {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border-left: 5px solid var(--flcc-blue);
+        }
+
+        .question-text {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        /* Interactive Elements */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        button.option-btn {
+            background-color: white;
+            border: 2px solid var(--flcc-blue);
+            color: var(--flcc-blue);
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+
+        button.option-btn:hover {
+            background-color: var(--flcc-blue);
+            color: var(--flcc-gold);
+        }
+
+        button.option-btn.correct {
+            background-color: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+
+        button.option-btn.incorrect {
+            background-color: var(--error);
+            border-color: var(--error);
+            color: white;
+        }
+
+        .feedback {
+            margin-top: 10px;
+            font-style: italic;
+            min-height: 20px;
+            font-weight: bold;
+        }
+
+        /* Code Snippets */
+        code {
+            background-color: #eef;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            color: #d63384;
+        }
+
+        pre {
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        /* Input fields */
+        input[type="number"], input[type="text"] {
+            padding: 8px;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+            width: 100px;
+        }
+
+        button.check-btn {
+            background-color: var(--flcc-blue);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .reveal-btn {
+            display: block;
+            margin: 20px auto;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            background-color: var(--flcc-gold);
+            color: var(--flcc-blue);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .reveal-btn:hover {
+            background-color: #e6b800;
+        }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>FLCC Java Prep</h1>
+    <p>Prerequisites for the Time Class</p>
+</header>
+
+<div class="container">
+
+    <!-- Question 10: The Origin -->
+    <section id="section-origin">
+        <h2>1. The Origin of Time</h2>
+        <p>Before we build a clock, we need to know where Java's time comes from.</p>
+        
+        <div class="question-block">
+            <span class="question-text">Q10. When you call <code>System.currentTimeMillis()</code>, it returns the number of milliseconds that have passed since a specific "Epoch" date. What is that date?</span>
+            <div class="options-grid" id="q10-options">
+                <button class="option-btn" onclick="checkMC(this, false, 'q10-feed')">January 1, 1900</button>
+                <button class="option-btn" onclick="checkMC(this, true, 'q10-feed')">January 1, 1970</button>
+                <button class="option-btn" onclick="checkMC(this, false, 'q10-feed')">December 31, 1999</button>
+                <button class="option-btn" onclick="checkMC(this, false, 'q10-feed')">The moment the JVM started</button>
+            </div>
+            <div id="q10-feed" class="feedback"></div>
+        </div>
+    </section>
+
+    <!-- Math Logic: Q1, Q2, Q3 -->
+    <section id="section-math">
+        <h2>2. The Math of Time</h2>
+        <p>Computers handle integer math differently than your calculator. Let's test your logic.</p>
+
+        <!-- Q1: Conversion -->
+        <div class="question-block">
+            <span class="question-text">Q1. How many milliseconds are in 1 second?</span>
+            <input type="number" id="q1-input" placeholder="?">
+            <button class="check-btn" onclick="checkInput('q1-input', 1000, 'q1-feed')">Check</button>
+            <div id="q1-feed" class="feedback"></div>
+        </div>
+
+        <!-- Q3: Integer Division -->
+        <div class="question-block">
+            <span class="question-text">Q3. Integer Division. What is the result of <code>1500 / 1000</code> in Java (using integers)?</span>
+            <p><em>Hint: Integers cannot hold decimals!</em></p>
+            <input type="number" id="q3-input" placeholder="?">
+            <button class="check-btn" onclick="checkInput('q3-input', 1, 'q3-feed')">Check</button>
+            <div id="q3-feed" class="feedback"></div>
+        </div>
+
+        <!-- Q2: Modulo -->
+        <div class="question-block">
+            <span class="question-text">Q2. The Modulo Operator (%).</span>
+            <p>If we have <strong>65 seconds</strong>, that is 1 minute and 5 seconds.</p>
+            <p>In Java:</p>
+            <ul>
+                <li><code>65 / 60</code> gives us the minutes (1).</li>
+                <li><code>65 % 60</code> gives us the remaining seconds.</li>
+            </ul>
+            <p><strong>Your Turn:</strong> What is <code>125 % 60</code>?</p>
+            <input type="number" id="q2-input" placeholder="?">
+            <button class="check-btn" onclick="checkInput('q2-input', 5, 'q2-feed')">Check</button>
+            <div id="q2-feed" class="feedback"></div>
+        </div>
+    </section>
+
+    <!-- Java Syntax: Q5 -->
+    <section id="section-syntax">
+        <h2>3. Data Types & Casting</h2>
+        
+        <div class="question-block">
+            <span class="question-text">Q5. The Big Squeeze (Casting)</span>
+            <p><code>System.currentTimeMillis()</code> returns a <code>long</code> (big container). Our <code>hour</code>, <code>minute</code>, and <code>second</code> variables are <code>int</code> (smaller container).</p>
+            <p>Which line of code correctly forces a <code>long</code> variable named <code>totalSeconds</code> into an <code>int</code> variable named <code>currentSecond</code>?</p>
+            
+            <div class="options-grid">
+                <button class="option-btn" onclick="checkMC(this, false, 'q5-feed')"><code>int currentSecond = totalSeconds;</code></button>
+                <button class="option-btn" onclick="checkMC(this, true, 'q5-feed')"><code>int currentSecond = (int)totalSeconds;</code></button>
+                <button class="option-btn" onclick="checkMC(this, false, 'q5-feed')"><code>int currentSecond = totalSeconds.toInt();</code></button>
+            </div>
+            <div id="q5-feed" class="feedback"></div>
+        </div>
+    </section>
+
+    <!-- OOP Concepts: Q6, Q7 -->
+    <section id="section-oop">
+        <h2>4. Object-Oriented Design</h2>
+        
+        <!-- Q6: Constructors -->
+        <div class="question-block">
+            <span class="question-text">Q6. Identifying Constructors</span>
+            <p>A constructor is a special method used to set up an object. How do you spot it?</p>
+            <div class="options-grid">
+                <button class="option-btn" onclick="checkMC(this, false, 'q6-feed')">It has a <code>void</code> return type.</button>
+                <button class="option-btn" onclick="checkMC(this, true, 'q6-feed')">It has no return type and matches the class name.</button>
+                <button class="option-btn" onclick="checkMC(this, false, 'q6-feed')">It must be named <code>init()</code>.</button>
+            </div>
+            <div id="q6-feed" class="feedback"></div>
+        </div>
+
+        <!-- Q7: Overloading -->
+        <div class="question-block">
+            <span class="question-text">Q7. Multiple Constructors</span>
+            <p>Look at this code snippet:</p>
+<pre>
+public Time() { ... }
+public Time(long elapsedTime) { ... }
+public Time(int h, int m, int s) { ... }
+</pre>
+            <p>We have three methods with the <strong>same name</strong> but <strong>different parameters</strong>. What is this technique called?</p>
+            
+            <div class="options-grid">
+                <button class="option-btn" onclick="checkMC(this, false, 'q7-feed')">Method Overriding</button>
+                <button class="option-btn" onclick="checkMC(this, true, 'q7-feed')">Method Overloading</button>
+                <button class="option-btn" onclick="checkMC(this, false, 'q7-feed')">Encapsulation</button>
+            </div>
+            <div id="q7-feed" class="feedback"></div>
+        </div>
+    </section>
+
+    <button class="reveal-btn" onclick="finish()">I'm Ready to Code!</button>
+    <p id="final-msg" style="text-align: center; display: none; font-size: 1.5rem; color: var(--flcc-blue); font-weight: bold;">Great job! You have the tools to build the Time class.</p>
+
+</div>
+
+<script>
+    // Multiple Choice Checker
+    function checkMC(btn, isCorrect, feedbackId) {
+        const feedbackEl = document.getElementById(feedbackId);
+        const parent = btn.parentElement;
+        
+        // Reset buttons in this group
+        const buttons = parent.getElementsByClassName('option-btn');
+        for (let b of buttons) {
+            b.classList.remove('correct', 'incorrect');
+            b.disabled = false;
+        }
+
+        if (isCorrect) {
+            btn.classList.add('correct');
+            feedbackEl.textContent = "Correct! Well done.";
+            feedbackEl.style.color = "var(--success)";
+            
+            // Disable others
+            for (let b of buttons) {
+                if (b !== btn) b.disabled = true;
+            }
+        } else {
+            btn.classList.add('incorrect');
+            feedbackEl.textContent = "Not quite. Try again!";
+            feedbackEl.style.color = "var(--error)";
+        }
+    }
+
+    // Input Checker
+    function checkInput(inputId, correctVal, feedbackId) {
+        const input = document.getElementById(inputId);
+        const feedbackEl = document.getElementById(feedbackId);
+        const userVal = parseInt(input.value);
+
+        if (userVal === correctVal) {
+            feedbackEl.textContent = "Spot on!";
+            feedbackEl.style.color = "var(--success)";
+            input.style.borderColor = "var(--success)";
+        } else {
+            feedbackEl.textContent = "Check your math and try again.";
+            feedbackEl.style.color = "var(--error)";
+            input.style.borderColor = "var(--error)";
+        }
+    }
+
+    function finish() {
+        document.getElementById('final-msg').style.display = 'block';
+        window.scrollTo(0, document.body.scrollHeight);
+        confettiEffect();
+    }
+
+    function confettiEffect() {
+        // Simple visual cue
+        const colors = ['#003366', '#FFCC00', '#ffffff'];
+        let end = Date.now() + 1000;
+
+        // This is just a placeholder for a real confetti library, 
+        // but we'll just change the background slightly to celebrate.
+        document.body.style.backgroundColor = "#e6f0ff";
+        setTimeout(() => {
+            document.body.style.backgroundColor = "var(--bg-light)";
+        }, 500);
+    }
+</script>
+
+</body>
+</html>
