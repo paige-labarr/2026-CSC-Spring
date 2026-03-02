@@ -281,7 +281,7 @@
             <span class="concept-title">Wrapper Classes (Integer, Double)</span>
             <p>In Java, primitives (like <code>int</code> and <code>double</code>) are efficient but aren't objects. Wrapper classes allow primitives to be treated as objects.</p>
             <ul>
-                <li><strong>Integer</strong>: The wrapper class for <code>int</code>. Useful when storing numbers in Collections (like <code>ArrayList&lt;Integer&gt;</code>).</li>
+                <li><strong>Integer</strong>: The wrapper class for <code>int</code>. </li>
                 <li><strong>Double</strong>: The wrapper class for <code>double</code>.</li>
                 <li><em>Note:</em> These are <strong>Immutable</strong>. Once created, the value cannot change.</li>
             </ul>
@@ -437,16 +437,16 @@
     // --- Quiz Data ---
     const quizData = [
         {
-            scenario: "You need to calculate the total cost of a shopping cart with items like $19.99 and $5.45. Precision is critical.",
+            scenario: "You need to calculate the total cost revenue, profit, and loss in a budget with several items like $19.99 and $5.45. Precision is critical.",
             options: ["Integer", "Double", "BigInteger", "BigDecimal"],
             answer: "BigDecimal",
             explanation: "BigDecimal is designed for financial calculations to avoid floating-point rounding errors common with Double."
         },
         {
-            scenario: "You are creating a list of student ID numbers (e.g., 10452) to store in an ArrayList.",
+            scenario: "You are creating a list of student ID numbers (all 5-digits, for example: 01452).",
             options: ["Integer", "Double", "BigInteger", "BigDecimal"],
             answer: "Integer",
-            explanation: "ArrayLists store objects. Integer is the wrapper class for whole numbers that fit within standard limits."
+            explanation: "Integer is the wrapper class for whole numbers that fit within standard limits."
         },
         {
             scenario: "You need to calculate the number of atoms in the observable universe (estimated around 10^80).",
