@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turtle Time 🐢</title>
+    <script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt-stdlib.js"></script>
+    <style>
+        :root { --bg: #f8f9fa; --card: #ffffff; --text: #2d3436; --accent: #6c5ce7; --btn-run: #00b894; --btn-clear: #fab1a0; }
+        [data-theme="dark"] { --bg: #1e1e1e; --card: #2d2d2d; --text: #dfe6e9; --accent: #a29bfe; --btn-run: #55efc4; --btn-clear: #ff7675; }
+
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; transition: 0.3s; }
+        .header { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto 20px auto; }
+        .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1200px; margin: 0 auto; height: 70vh; }
+        .box { background: var(--card); border-radius: 12px; padding: 15px; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        
+        textarea { flex: 1; font-family: 'Fira Code', 'Courier New', monospace; font-size: 14px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; background: inherit; color: inherit; resize: none; outline: none; line-height: 1.5; }
+        #canvas { background: white; flex: 1; border-radius: 8px; border: 1px solid #eee; overflow: hidden; }
+
+        .toolbar { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; justify-content: center; }
+        button { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.2s; font-size: 13px; }
+        .run-btn { background: var(--btn-run); color: #fff; }
+        .dl-btn { background: var(--accent); color: white; }
+        .clear-btn { background: var(--btn-clear); color: #fff; }
+        .reset-btn { background: #636e72; color: white; }
+        .theme-btn { background: #b2bec3; color: #2d3436; }
+        .preset-btn { background: transparent; border: 1px solid var(--accent); color: var(--accent); }
+        .preset-btn:hover { background: var(--accent); color: white; }
+
+        #output { color: #ff7675; font-size: 13px; margin-top: 10px; min-height: 20px; font-family: monospace; }
+        .label { font-weight: bold; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+    </style>
+</head>
+<body data-theme="light">
+
+    <div class="header">
+        <h1>Turtle Coding Lab 🐢</h1>
+        <button class="theme-btn" onclick="toggleTheme()">🌓 Toggle Theme</button>
+    </div>
+
+    <div class="toolbar">
+        <span style="align-self: center; font-weight: bold;">Quick Starts:</span>
+        <button class="preset-btn" onclick="loadCode('square')">Square</button>
+        <button class="preset-btn" onclick="loadCode('star')">Star</button>
+        <button class="preset-btn" onclick="loadCode('spiral')">Rainbow Spiral</button>
+        <button class="reset-btn" onclick="resetToDefault()">↺ Reset Editor</button>
+    </div>
+
+    <div class="main-grid">
+        <div class="box">
+            <div class="label">
+                Python Editor
+                <div>
+                    <button class="run-btn" onclick="runPython()">▶ Run</button>
+                    <button class="dl-btn" onclick="downloadCode()">💾 Save</button>
+                </div>
+            </div>
+            <textarea id="yourcode" spellcheck="false" placeholder="Write your Python code here..."></textarea>
+            <div id="output"></div>
+        </div>
+
+        <div class="box">
+            <div class="label">
+                Output Canvas
+                <button class="clear-btn" onclick="clearCanvas()">Clear</button>
+            </div>
+            <div id="canvas"></div>
+        </div>
+    </div>
+
+    <script>
+        const defaultCode = `import turtle\nt = turtle.Turtle()\nfor i in range(4):\n    t.forward(100)\n    t.left(90)`;
+        const presets = {
+            square: defaultCode,
+            star: `import turtle\nt = turtle.Turtle()\nt.color("orange")\nfor i in range(5):\n    t.forward(150)\n    t.right(144)`,
+            spiral: `import turtle\nt = turtle.Turtle()\nt.speed(0)\ncolors = ["red", "purple", "blue", "green", "orange", "yellow"]\nfor x in range(100):\n    t.pencolor(colors[x % 6])\n    t.width(x/100 + 1)\n    t.forward(x)\n    t.left(59)`
+        };
+
+        const editor = document.getElementById("yourcode");
+
+        // Load saved code on startup
+        window.onload = () => {
+            const saved = localStorage.getItem('turtle_code');
+            editor.value = saved || defaultCode;
+        };
+
+        // Auto-save on input
+        editor.addEventListener('input', () => {
+            localStorage.setItem('turtle_code', editor.value);
+        });
+
+        function loadCode(key) {
+            editor.value = presets[key];
+            localStorage.setItem('turtle_code', editor.value);
+        }
+
+        function resetToDefault() {
+            if(confirm("Are you sure you want to reset to the default square?")) {
+                editor.value = defaultCode;
+                localStorage.setItem('turtle_code', defaultCode);
+            }
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            body.dataset.theme = body.dataset.theme === "light" ? "dark" : "light";
+        }
+
+        function downloadCode() {
+            const blob = new Blob([editor.value], { type: "text/plain" });
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = "my_turtle_art.py";
+            a.click();
+        }
+
+        function outf(text) { document.getElementById("output").innerHTML += text; } 
+        function builtinRead(x) {
+            if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined)
+                throw "File not found: '" + x + "'";
+            return Sk.builtinFiles["files"][x];
+        }
+
+        function runPython() {
+            document.getElementById("output").innerHTML = ''; 
+            Sk.pre = "canvas";
+            Sk.configure({ output: outf, read: builtinRead, __future__: Sk.python3 });
+            (Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).target = 'canvas';
+            Sk.misceval.asyncToPromise(() => 
+                Sk.importMainWithBody("<stdin>", false, editor.value, true)
+            ).catch(err => document.getElementById("output").innerHTML = err.toString());
+        }
+
+        function clearCanvas() {
+            document.getElementById("canvas").innerHTML = "";
+            document.getElementById("output").innerHTML = "";
+        }
+    </script>
+</body>
+</html>
