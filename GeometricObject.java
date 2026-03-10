@@ -44,5 +44,10 @@ public class GeometricObject {
         return dateCreated;
     }
 
-    // You can add more methods as needed, such as a toString method
+    // toString method
+    @Override
+    public String toString() {
+        return "GeometricObject object -> color = " + getColor() + 
+               ", filled = " + isFilled() + ", dateCreated = " + getDateCreated();
+    }
 }
