@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OOP Inheritance Vocabulary Match</title>
+    <style>
+        :root {
+            --main-color: #0046AD; /* A nice blue */
+            --secondary-color: #58A618; /* A contrasting green */
+            --text-color: #333;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --error-color: #dc3545;
+            --focus-outline: #0056b3;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: var(--main-color);
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            border-bottom: 5px solid var(--secondary-color);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+
+        .game-info {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .status-message {
+            font-weight: bold;
+            min-height: 1.5em;
+            margin-bottom: 10px;
+            color: var(--main-color);
+            font-size: 1.2rem;
+        }
+
+        #score {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .game-board {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .column {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .column h2 {
+            text-align: center;
+            color: var(--main-color);
+            font-size: 1.3rem;
+            margin-top: 0;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+            text-align: left;
+            width: 100%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: var(--text-color);
+        }
+
+        .card:hover:not(:disabled) {
+            border-color: var(--main-color);
+            background-color: #eef4ff;
+        }
+
+        .card:focus {
+            outline: 3px solid var(--focus-outline);
+            outline-offset: 2px;
+        }
+
+        .card.selected {
+            background-color: var(--main-color);
+            color: white;
+            border-color: var(--main-color);
+            transform: scale(1.02);
+        }
+
+        .card.matched {
+            background-color: var(--secondary-color);
+            color: white;
+            border-color: var(--secondary-color);
+            cursor: default;
+            font-weight: bold;
+        }
+
+        .card.wrong {
+            background-color: var(--error-color);
+            color: white;
+            border-color: var(--error-color);
+            animation: shake 0.5s;
+        }
+
+        .checkmark {
+            display: none;
+            font-size: 1.2rem;
+            margin-left: 10px;
+        }
+
+        .card.matched .checkmark {
+            display: inline-block;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+
+        .reset-btn {
+            display: block;
+            margin: 2rem auto;
+            padding: 12px 25px;
+            background-color: var(--main-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+
+        .reset-btn:hover {
+            background-color: #003380;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .game-board {
+                flex-direction: column;
+            }
+            .column {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Inheritance Vocabulary Match</h1>
+</header>
+
+<div class="container">
+    <div class="game-info">
+        <div id="status" class="status-message" aria-live="polite">Select a term and its definition.</div>
+        <div id="score">Score: 0 / 5</div>
+    </div>
+
+    <div class="game-board">
+        <div class="column" id="terms-col">
+            <h2>Terms</h2>
+            <!-- Terms will be injected by JavaScript -->
+        </div>
+        <div class="column" id="defs-col">
+            <h2>Definitions</h2>
+            <!-- Definitions will be injected by JavaScript -->
+        </div>
+    </div>
+
+    <button class="reset-btn" onclick="initGame()">Reset Game</button>
+</div>
+
+<script>
+    const gameData = [
+        { term: "Class", def: "A blueprint or template for creating objects." },
+        { term: "Object", def: "An instance of a class, with its own state and behavior." },
+        { term: "Superclass", def: "The 'parent' class from which another class inherits." },
+        { term: "Subclass", def: "The 'child' class that inherits from a superclass." },
+        { term: "Constructor", def: "A special method for creating and initializing an object." }
+    ];
+
+    let selectedTerm = null;
+    let selectedDef = null;
+    let matches = 0;
+    let isProcessing = false;
+
+    function initGame() {
+        const termsCol = document.getElementById('terms-col');
+        const defsCol = document.getElementById('defs-col');
+        const status = document.getElementById('status');
+        
+        // Clear existing content but keep headers
+        termsCol.innerHTML = '<h2>Terms</h2>';
+        defsCol.innerHTML = '<h2>Definitions</h2>';
+        
+        // Reset game state
+        status.textContent = "Select a term and its definition.";
+        status.style.color = "var(--main-color)";
+        selectedTerm = null;
+        selectedDef = null;
+        matches = 0;
+        isProcessing = false;
+        updateScore();
+
+        // Create shuffled arrays for terms and definitions
+        const terms = [...gameData].sort(() => Math.random() - 0.5);
+        const defs = [...gameData].sort(() => Math.random() - 0.5);
+
+        // Render Term cards
+        terms.forEach(item => {
+            const card = createCard(item.term, 'term', item.term);
+            termsCol.appendChild(card);
+        });
+
+        // Render Definition cards
+        defs.forEach(item => {
+            const card = createCard(item.def, 'def', item.term);
+            defsCol.appendChild(card);
+        });
+    }
+
+    function createCard(text, type, matchId) {
+        const btn = document.createElement('button');
+        btn.className = 'card';
+        btn.innerHTML = `<span>${text}</span><span class="checkmark">✔</span>`;
+        btn.dataset.type = type;
+        btn.dataset.matchId = matchId;
+        btn.setAttribute('aria-label', text);
+        
+        btn.onclick = () => handleCardClick(btn);
+        return btn;
+    }
+
+    function handleCardClick(btn) {
+        if (isProcessing || btn.classList.contains('matched') || btn.classList.contains('selected')) {
+            return;
+        }
+
+        const type = btn.dataset.type;
+
+        if (type === 'term') {
+            if (selectedTerm) selectedTerm.classList.remove('selected');
+            selectedTerm = btn;
+        } else {
+            if (selectedDef) selectedDef.classList.remove('selected');
+            selectedDef = btn;
+        }
+
+        btn.classList.add('selected');
+
+        if (selectedTerm && selectedDef) {
+            checkMatch();
+        }
+    }
+
+    function checkMatch() {
+        isProcessing = true;
+        const status = document.getElementById('status');
+        
+        if (selectedTerm.dataset.matchId === selectedDef.dataset.matchId) {
+            // Correct Match
+            selectedTerm.classList.add('matched');
+            selectedDef.classList.add('matched');
+            selectedTerm.disabled = true;
+            selectedDef.disabled = true;
+
+            status.textContent = "Correct Match!";
+            status.style.color = "var(--secondary-color)";
+            matches++;
+            updateScore();
+
+            selectedTerm = null;
+            selectedDef = null;
+            isProcessing = false;
+        } else {
+            // Incorrect Match
+            selectedTerm.classList.add('wrong');
+            selectedDef.classList.add('wrong');
+            status.textContent = "Incorrect. Try again.";
+            status.style.color = "var(--error-color)";
+
+            setTimeout(() => {
+                selectedTerm.classList.remove('selected', 'wrong');
+                selectedDef.classList.remove('selected', 'wrong');
+                selectedTerm = null;
+                selectedDef = null;
+                status.textContent = "Select a term and its definition.";
+                status.style.color = "var(--main-color)";
+                isProcessing = false;
+            }, 1000);
+        }
+    }
+
+    function updateScore() {
+        const scoreEl = document.getElementById('score');
+        scoreEl.textContent = `Score: ${matches} / ${gameData.length}`;
+        if (matches === gameData.length) {
+            document.getElementById('status').textContent = "All matched! Great job!";
+        }
+    }
+
+    // Initialize the game when the page loads
+    window.onload = initGame;
+
+</script>
+
+</body>
+</html>
