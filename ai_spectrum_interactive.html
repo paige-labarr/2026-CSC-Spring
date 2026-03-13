@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSC-190 The Spectrum of AI Use</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #0046AD;
+            --light-gray: #f0f2f5;
+            --medium-gray: #ccc;
+            --dark-gray: #333;
+            --white: #ffffff;
+            --slider-track-height: 8px;
+            --slider-thumb-size: 20px;
+        }
+
+        /* Basic setup and typography */
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: var(--light-gray);
+            color: var(--dark-gray);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--primary-blue);
+            color: var(--white);
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2rem;
+        }
+
+        header p {
+            margin: 0.5rem 0 0;
+            font-size: 1.1rem;
+            opacity: 0.95;
+        }
+
+        /* Accessibility class for screen readers */
+        .visually-hidden {
+            clip: rect(0 0 0 0);
+            clip-path: inset(50%);
+            height: 1px;
+            overflow: hidden;
+            position: absolute;
+            white-space: nowrap;
+            width: 1px;
+        }
+
+        /* Spectrum Labels */
+        .spectrum-labels {
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem 0.5rem;
+            border-bottom: 2px solid var(--medium-gray);
+            margin-bottom: 2rem;
+        }
+        
+        .spectrum-labels div {
+            flex: 1;
+            padding: 0 1rem;
+        }
+
+        .spectrum-labels .label-start {
+            text-align: left;
+        }
+
+        .spectrum-labels .label-end {
+            text-align: right;
+        }
+
+        .spectrum-labels strong {
+            display: block;
+            font-size: 1.1rem;
+            color: var(--primary-blue);
+        }
+
+        .spectrum-labels span {
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        /* Scenario Cards */
+        .scenario-card {
+            background-color: var(--white);
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+            border-left: 5px solid var(--primary-blue);
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .scenario-label {
+            display: block;
+            font-weight: 400;
+            margin-bottom: 0;
+            cursor: inherit;
+        }
+
+        .scenario-label strong {
+            color: var(--primary-blue);
+            font-size: 1.2rem;
+            margin-right: 0.5rem;
+        }
+
+        .scenario-card:hover, .scenario-card:focus-within {
+            background-color: #e6f0ff;
+        }
+
+        /* Spectrum Board Styles */
+        .spectrum-board {
+            background-color: var(--white);
+            padding: 2rem 1rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            position: sticky;
+            top: 10px;
+            z-index: 100;
+            border-top: 5px solid var(--primary-blue);
+        }
+
+        .track-container {
+            position: relative;
+            height: 160px;
+            margin: 1rem 2rem;
+        }
+
+        .track-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background-color: var(--medium-gray);
+            transform: translateY(-50%);
+            border-radius: 3px;
+        }
+
+        .track-ticks {
+            display: flex;
+            justify-content: space-between;
+            position: absolute;
+            width: 100%;
+            top: 50%;
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: #666;
+            pointer-events: none;
+        }
+
+        .token {
+            position: absolute;
+            top: 50%;
+            width: 34px;
+            height: 34px;
+            background: var(--primary-blue);
+            color: var(--white);
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: grab;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            transition: transform 0.1s, box-shadow 0.2s, background-color 0.2s;
+            user-select: none;
+            touch-action: none;
+        }
+
+        .token:hover, .token:focus {
+            transform: translate(-50%, -50%) scale(1.2);
+            z-index: 20;
+            background-color: #003380;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+            outline: none;
+        }
+
+        .token:focus-visible {
+            outline: 3px solid var(--dark-gray);
+            outline-offset: 2px;
+        }
+
+        .token.dragging {
+            cursor: grabbing;
+            transform: translate(-50%, -50%) scale(1.25);
+            z-index: 100;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .spectrum-labels {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            .spectrum-labels .label-start,
+            .spectrum-labels .label-end {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>CSC-190 The Spectrum of AI Use</h1>
+    <p>Rank each scenario on a scale of 1 (steals learning) to 10 (enhances learning). Drag the letters on the line below.</p>
+</header>
+
+<main class="container">
+    <p id="spectrum-description" class="visually-hidden">A scale from 1, meaning cheating, lazy, and stealing learning, to 10, meaning totally fine, enhances learning, efficient, and a learning tool.</p>
+
+    <!-- Interactive Board -->
+    <section class="spectrum-board" aria-label="Interactive Spectrum Plot">
+        <div class="spectrum-labels" aria-hidden="true">
+            <div class="label-start" style="border:none; padding:0;">
+                <strong>1: Steals Learning</strong>
+            </div>
+            <div class="label-end" style="border:none; padding:0;">
+                <strong>10: Enhances Learning</strong>
+            </div>
+        </div>
+        
+        <div class="track-container" id="track-container">
+            <div class="track-line"></div>
+            <div class="track-ticks">
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <!-- Tokens injected by JS -->
+        </div>
+    </section>
+
+    <section class="spectrum-labels" aria-hidden="true" style="margin-bottom: 1rem; border: none;">
+        <div class="label-start">
+            <strong>1: Steals Learning</strong>
+            <span>Cheating, lazy, stealing learning</span>
+        </div>
+        <div class="label-end">
+            <strong>10: Enhances Learning</strong>
+            <span>Totally fine, efficient, a learning tool</span>
+        </div>
+    </section>
+
+    <section id="scenarios-container">
+        <p style="text-align: center; margin-bottom: 1.5rem; color: #555;"><em>Click a scenario below to locate its token on the line.</em></p>
+        
+        <!-- Scenario A -->
+        <div class="scenario-card" onclick="focusToken('A')">
+            <label for="scenario-A-slider" class="scenario-label"><strong>Scenario A:</strong> You need a switch statement, but you forgot the syntax. You type: “How do I write a switch statement in Java?”</label>
+        </div>
+
+        <!-- Scenario B -->
+        <div class="scenario-card" onclick="focusToken('B')">
+            <label for="scenario-B-slider" class="scenario-label"><strong>Scenario B:</strong> You forgot how a for loop is set up. You type: “I know I need three pieces of info including a condition and a starting amount, but how do I set up a standard for loop in Java?”</label>
+        </div>
+
+        <!-- Scenario C -->
+        <div class="scenario-card" onclick="focusToken('C')">
+            <label for="scenario-C-slider" class="scenario-label"><strong>Scenario C:</strong> You have to create a GradeCalculator class. You copy and paste the class description and requirements into AI and state: “Create the GradeCalculator class.”</label>
+        </div>
+
+        <!-- Scenario D -->
+        <div class="scenario-card" onclick="focusToken('D')">
+            <label for="scenario-D-slider" class="scenario-label"><strong>Scenario D:</strong> You have to create a GradeCalculator class. You already wrote a draft of the class. You copy and paste the class description and requirements into AI and state: “Review my code and check the rubric. Roast my code and tell me how to improve it!”</label>
+        </div>
+
+        <!-- Scenario E -->
+        <div class="scenario-card" onclick="focusToken('E')">
+            <label for="scenario-E-slider" class="scenario-label"><strong>Scenario E:</strong> You have to create a GradeCalculator class. You already wrote a draft of the class. You copy and paste the class description and requirements into AI and state: “Review my code and check the rubric. Make improvements so my code is worth full credit.”</label>
+        </div>
+
+        <!-- Scenario F -->
+        <div class="scenario-card" onclick="focusToken('F')">
+            <label for="scenario-F-slider" class="scenario-label"><strong>Scenario F:</strong> You ask: “What is a Java method for a String object that will tell me if a certain letter is in the string? For example, let’s say I wanted to check if a password contains an exclamation point. How can I do that?”</label>
+        </div>
+
+        <!-- Scenario G -->
+        <div class="scenario-card" onclick="focusToken('G')">
+            <label for="scenario-G-slider" class="scenario-label"><strong>Scenario G:</strong> You have a final project in CSC-190. You ask AI: "I need to build a fully-functional Battleship game. What classes should I create and what methods should belong to each?" You then write the code for those classes yourself.</label>
+        </div>
+
+        <!-- Scenario H -->
+        <div class="scenario-card" onclick="focusToken('H')">
+            <label for="scenario-H-slider" class="scenario-label"><strong>Scenario H:</strong> You finish writing a program and realize you never included comments. You paste your code and ask: "Write good comments for my entire program" and paste that back into your project.</label>
+        </div>
+
+        <!-- Scenario I -->
+        <div class="scenario-card" onclick="focusToken('I')">
+            <label for="scenario-I-slider" class="scenario-label"><strong>Scenario I:</strong> You create a program and keep getting a syntax error that you don’t understand. You paste the error into AI and write: “I am creating a Java program - explain what this error means and how I can fix it.”</label>
+        </div>
+
+        <!-- Scenario J -->
+        <div class="scenario-card" onclick="focusToken('J')">
+            <label for="scenario-J-slider" class="scenario-label"><strong>Scenario J:</strong> You have to write a simple Java program (multiple print statements) that you consider to be easy and tedious. You ask AI to write the program for you so you can save yourself three minutes.</label>
+        </div>
+
+        <!-- Scenario K -->
+        <div class="scenario-card" onclick="focusToken('K')">
+            <label for="scenario-K-slider" class="scenario-label"><strong>Scenario K:</strong> You write a Java program that you think is very repetitive but it’s not as simple as using a loop to repeat a process. You ask AI to review your program and improve the readability and efficiency.</label>
+        </div>
+
+    </section>
+</main>
+
+<script>
+    const scenarios = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'];
+    const container = document.getElementById('track-container');
+    const minVal = 1;
+    const maxVal = 10;
+    const step = 0.5;
+    
+    // Initial setup
+    window.onload = () => {
+        scenarios.forEach((letter, index) => {
+            const token = document.createElement('div');
+            token.className = 'token';
+            token.id = 'token-' + letter;
+            token.textContent = letter;
+            token.setAttribute('role', 'slider');
+            token.setAttribute('tabindex', '0');
+            token.setAttribute('aria-valuemin', minVal);
+            token.setAttribute('aria-valuemax', maxVal);
+            token.setAttribute('aria-valuenow', '5');
+            token.setAttribute('aria-label', 'Scenario ' + letter);
+            
+            // Set initial value
+            token.dataset.value = 5;
+            
+            // Event Listeners
+            token.addEventListener('mousedown', startDrag);
+            token.addEventListener('touchstart', startDrag, {passive: false});
+            token.addEventListener('keydown', handleKey);
+            
+            container.appendChild(token);
+        });
+        updateLayout();
+    };
+
+    function updateLayout() {
+        const grouped = {};
+        // Group tokens by their current value
+        scenarios.forEach(letter => {
+            const token = document.getElementById('token-' + letter);
+            if (token) {
+                const val = parseFloat(token.dataset.value);
+                if (!grouped[val]) grouped[val] = [];
+                grouped[val].push(token);
+            }
+        });
+
+        // Apply positions
+        for (const [val, tokens] of Object.entries(grouped)) {
+            const percent = ((val - minVal) / (maxVal - minVal)) * 100;
+            
+            tokens.forEach((token, index) => {
+                token.style.left = percent + '%';
+                token.setAttribute('aria-valuenow', val);
+
+                // Vertical Stacking: Alternating Up/Down to prevent overlap
+                let offset = 0;
+                if (index > 0) {
+                    const sign = index % 2 === 1 ? -1 : 1;
+                    const multiplier = Math.ceil(index / 2);
+                    offset = sign * multiplier * 36; // 36px vertical steps
+                }
+                token.style.marginTop = offset + 'px';
+            });
+        }
+    }
+
+    function handleKey(e) {
+        const token = e.target;
+        let val = parseFloat(token.dataset.value);
+        
+        if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+            e.preventDefault();
+            val = Math.min(val + step, maxVal);
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+            e.preventDefault();
+            val = Math.max(val - step, minVal);
+        } else {
+            return;
+        }
+        
+        token.dataset.value = val;
+        updateLayout();
+    }
+
+    // Drag Logic
+    let activeToken = null;
+
+    function startDrag(e) {
+        activeToken = e.target;
+        activeToken.classList.add('dragging');
+        activeToken.focus(); // Ensure keyboard control works after click
+        
+        document.addEventListener('mousemove', onDrag);
+        document.addEventListener('mouseup', endDrag);
+        document.addEventListener('touchmove', onDrag, {passive: false});
+        document.addEventListener('touchend', endDrag);
+    }
+
+    function onDrag(e) {
+        if (!activeToken) return;
+        e.preventDefault(); // Prevent scrolling on touch
+
+        let clientX = e.clientX;
+        if (e.touches && e.touches.length > 0) {
+            clientX = e.touches[0].clientX;
+        }
+
+        const rect = container.getBoundingClientRect();
+        let x = clientX - rect.left;
+        
+        // Clamp within container
+        if (x < 0) x = 0;
+        if (x > rect.width) x = rect.width;
+
+        // Calculate value 1-10
+        const percent = x / rect.width;
+        // Round to nearest step (0.5)
+        let val = Math.round((minVal + percent * (maxVal - minVal)) / step) * step;
+        
+        // Clamp value
+        val = Math.max(minVal, Math.min(maxVal, val));
+        
+        activeToken.dataset.value = val;
+        updateLayout();
+    }
+
+    function endDrag() {
+        if (activeToken) {
+            activeToken.classList.remove('dragging');
+            activeToken = null;
+            
+            document.removeEventListener('mousemove', onDrag);
+            document.removeEventListener('mouseup', endDrag);
+            document.removeEventListener('touchmove', onDrag);
+            document.removeEventListener('touchend', endDrag);
+        }
+    }
+
+    // Global function to focus from the list
+    window.focusToken = function(letter) {
+        const token = document.getElementById('token-' + letter);
+        if (token) {
+            token.focus();
+            // Animation cue
+            token.style.transform = "translate(-50%, -50%) scale(1.5)";
+            setTimeout(() => {
+                token.style.transform = "";
+            }, 300);
+            
+            // Scroll to board if needed
+            const rect = document.querySelector('.spectrum-board').getBoundingClientRect();
+            if (rect.top < 0 || rect.bottom > window.innerHeight) {
+                document.querySelector('.spectrum-board').scrollIntoView({behavior: 'smooth'});
+            }
+        }
+    };
+</script>
+
+</body>
+</html>
